@@ -26,7 +26,6 @@ permissions:
 jobs:
   generate-sbom:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       project-version: ${{ steps.version.outputs.PROJECT_VERSION }}
     steps:
@@ -62,13 +61,3 @@ jobs:
         with:
           name: sbom
           path: ${{ env.PRODUCT_PATH }}build/reports/bom.json
-
-  store-sbom-data: # stores sbom and metadata in a predefined format for otterdog to pick up
-    needs: ['generate-sbom']
-    uses: eclipse-csi/workflows/.github/workflows/store-sbom-data.yml@main
-    with:
-      projectName: 'arc'
-      projectVersion: ${{ needs.generate-sbom.outputs.project-version }}
-      bomArtifact: 'sbom'
-      bomFilename: 'bom.json'
-      parentProject: 'a75a955e-abd4-4908-b2c4-08a517b63af8'
